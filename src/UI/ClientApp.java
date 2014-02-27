@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 
-public class TelecomClient {
+public class ClientApp {
 
 	private JFrame frame;
 
@@ -17,7 +17,7 @@ public class TelecomClient {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TelecomClient window = new TelecomClient();
+					ClientApp window = new ClientApp();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -29,7 +29,7 @@ public class TelecomClient {
 	/**
 	 * Create the application.
 	 */
-	public TelecomClient() {
+	public ClientApp() {
 		initialize();
 	}
 

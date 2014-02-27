@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class ClientApp {
+public class TelecomClient {
 
 	String host = "dsp2014.ece.mcgill.ca";
 	int port = 5000;
