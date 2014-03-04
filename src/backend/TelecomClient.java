@@ -1,14 +1,8 @@
 package backend;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -18,23 +12,18 @@ public class TelecomClient {
 	static String host = "dsp2014.ece.mcgill.ca";
 	static int port = 5000;
 	static Socket clientConnection;
-//	static BufferedWriter out;
-//	static BufferedReader br ;
-//	static OutputStream outStream;
-//	static PrintStream ps;
 	static DataInputStream in;
 	static DataOutputStream out;
+	
+	private static int responseMsgType = 5000, responseSubMsgType = 5000, responseSize = 0;
+	private static String responseMsgData = ""; 
+	
+	public static int readWriteSocket(int field1, int field2, int field3, String payload) throws IOException {
 
-	public static int registerUser(String username, String password) throws IOException {
-
-		String payload;
-
-		payload = username + "," + password;
-
-		byte[] msgType = ByteBuffer.allocate(4).putInt(5).array();
-		byte[] subMsgType = ByteBuffer.allocate(4).putInt(0).array();
+		byte[] msgType = ByteBuffer.allocate(4).putInt(field1).array();
+		byte[] subMsgType = ByteBuffer.allocate(4).putInt(field2).array();
+		byte[] size = ByteBuffer.allocate(4).putInt(field3).array();
 		byte[] msgData = payload.getBytes();
-		byte[] size = ByteBuffer.allocate(4).putInt(msgData.length).array();
 
 		byte[] msg = createMessage(msgType, subMsgType, size, msgData);
 
@@ -45,32 +34,33 @@ public class TelecomClient {
 			
 		}
 
-		int registerResult = ByteBuffer.wrap(subMsgType).getInt();
-		return registerResult;
+		int result = ByteBuffer.wrap(subMsgType).getInt();
+		return result;
+	}
+
+	public static int createUser(String username, String password) throws IOException {
+
+		String payload;
+		payload = username + "," + password;		
+		return readWriteSocket(5, 0, payload.getBytes().length, payload);
 	}
 
 	public static int loginUser(String username, String password) throws IOException {
 
 		String payload;
-
 		payload = username + "," + password;
-
-		byte[] msgType = ByteBuffer.allocate(4).putInt(5).array();
-		byte[] subMsgType = ByteBuffer.allocate(4).putInt(0).array();
-		byte[] msgData = payload.getBytes();
-		byte[] size = ByteBuffer.allocate(4).putInt(msgData.length).array();
-
-		byte[] msg = createMessage(msgType, subMsgType, size, msgData);
+		return readWriteSocket(3, 0, payload.getBytes().length, payload);
+	}
+	
+	public static int logoutUser() throws IOException {
 		
-		out.write(msg);
+		return readWriteSocket(4, 0, 0, "");
+	}
+	
+	public static int deleteUser (String username) throws IOException {
 		
-		// TO DO: read from server
-		while (in.read() == 0) {
-			
-		}
-
-		int loginResult = ByteBuffer.wrap(subMsgType).getInt();
-		return loginResult;
+		logoutUser();
+		return readWriteSocket(6, 0, 0, "");
 	}
 
 	public static byte[] createMessage(byte[] msgType, byte[] subMsgType, byte[] size, byte[] msgData) {
@@ -108,10 +98,22 @@ public class TelecomClient {
 			System.err.println("Exception: " + exc);
 		}
 	}
+	
+	public static void echo(String payload) throws IOException {
+		
+		readWriteSocket(2, 0, payload.getBytes().length, payload);
+		
+		System.out.println("echo fct");
+		System.out.println("sent msg: " + payload);
+		System.out.println("msg echoed: " + responseMsgData);
+	}
 
-	public static void closeSocket() throws Exception {
+	public static void exit() throws Exception {
+		
+		logoutUser();
+		in.close();
+		out.close();
 		clientConnection.close();
-		System.out.println("hhrhrhg");
 	}
 
 

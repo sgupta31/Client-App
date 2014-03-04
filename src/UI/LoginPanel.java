@@ -28,17 +28,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JPasswordField;
 
 public class LoginPanel extends JPanel {
-
-	private static JFrame frame;
+	
 	public static JButton btnLogin;
 	private static RegistrationFrame regFrame;
 	private JLabel lblUsername;
 	private JTextField username;
 	private JLabel lblPassword;
-	private JTextField password;
 	private int loginResult;
+	private JPasswordField password;
 
 	/**
 	 * Create the application.
@@ -64,13 +64,16 @@ public class LoginPanel extends JPanel {
 			public void mouseClicked(MouseEvent arg0) {
 
 				try {
-					loginResult = TelecomClient.registerUser(username.getText(), (password.getText()));
+					loginResult = TelecomClient.createUser(username.getText(), (password.getText()));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 				switch (loginResult) {
 				case 0:
-					JOptionPane.showMessageDialog(null, "Success!");
+					ClientApp.chatPanel = new ChatPanel(username.getText());
+//					ClientApp.loggedInUser = username.getText();
+					ClientApp.deck.add("chatPanel", ClientApp.chatPanel);
+					((ClientApp) getTopLevelAncestor()).swapView("chatPanel");
 					break;
 				case 1:
 					JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -122,11 +125,9 @@ public class LoginPanel extends JPanel {
 		lblPassword.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
 		lblPassword.setBounds(71, 133, 82, 21);
 		panel.add(lblPassword);
-
-		password = new JTextField();
-		password.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
+		
+		password = new JPasswordField();
 		password.setBounds(233, 129, 154, 31);
 		panel.add(password);
-		password.setColumns(10);
 	}
 }
