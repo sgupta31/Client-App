@@ -46,11 +46,6 @@ public class TelecomClient {
 		System.arraycopy(subMsgType, 0, msg, 4, 4);
 		System.arraycopy(size, 0, msg, 8, 4);
 		System.arraycopy(msgData, 0, msg, 12, msgData.length);
-<<<<<<< HEAD
-		
-=======
-
->>>>>>> f17b5c45756c41804e5018937dec23a348903995
 		System.out.println("Created message: " + Arrays.toString(msg));
 		return msg;
 	}
@@ -83,11 +78,7 @@ public class TelecomClient {
 		System.out.println("First 12 bytes of response: " + Arrays.toString(response));
 		byte[] responseMsg = new byte[respSize];
 		in.read(responseMsg, 0, respSize);
-<<<<<<< HEAD
-		System.out.println("Response text: " + new String(responseMsg));
-=======
 		System.out.println("Response Text: " + new String(responseMsg));
->>>>>>> f17b5c45756c41804e5018937dec23a348903995
 		return respSubMsgType;
 	}
 
@@ -102,7 +93,20 @@ public class TelecomClient {
 
 		String payload;
 		payload = username + "," + password;
-		return readWriteSocket(3, 0, payload.getBytes().length, payload);
+		int login = readWriteSocket(3, 0, payload.getBytes().length, payload);
+		int createStore = readWriteSocket(7, 0 , 1, " ");
+		switch (createStore) {
+			case 0:
+				System.out.println("Store created successfully.");
+				break;
+			case 1:
+				System.out.println("Store already exists.");
+				break;
+			case 2:
+				System.out.println("Not logged in.");
+				break;
+		}
+		return login;
 	}
 
 	public static int logoutUser() throws IOException {
@@ -112,12 +116,14 @@ public class TelecomClient {
 
 	public static int deleteUser () throws IOException {
 
-<<<<<<< HEAD
-		logoutUser();
-=======
 		//logoutUser();
->>>>>>> f17b5c45756c41804e5018937dec23a348903995
 		return readWriteSocket(6, 0, 1, " ");
+	}
+	
+	public static int sendMessage(String toUser, String message) throws IOException {
+		
+		String payload = toUser + "," + message;
+		return readWriteSocket(8, 0, payload.getBytes().length, payload);
 	}
 
 	public static int queryMessages() throws IOException {
