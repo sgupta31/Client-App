@@ -15,33 +15,10 @@ public class TelecomClient {
 	static Socket clientConnection;
 	static DataInputStream in;
 	static DataOutputStream out;
-<<<<<<< HEAD
-	
-	private static int respMsgType, respMsgSubType, respSize;
-	private static String respMsgData; 
-	
-	public static byte[] createMessage(byte[] msgType, byte[] subMsgType, byte[] size, byte[] msgData) {
-
-		byte[] msg = new byte[4*3 + msgData.length];
-
-		System.arraycopy(msgType, 0, msg, 0, 4);
-		System.arraycopy(subMsgType, 0, msg, 4, 4);
-		System.arraycopy(size, 0, msg, 8, 4);
-		System.arraycopy(msgData, 0, msg, 12, msgData.length);
-
-		return msg;
-	}
-=======
 
 	static byte[] response;
-<<<<<<< HEAD
-	private static int responseMsgType = 5000, responseSubMsgType = 5000, responseSize = 0;
-	private static String responseMsgData = ""; 
->>>>>>> c2cd04fcf82e948ea785f3516a0f5624a1ae9dd7
-=======
 	private static int respMsgType, respSubMsgType, respSize;
 	private static String respMsgData = ""; 
->>>>>>> 765ca2b9d706407d5fd49109371803192d8d7b1e
 	
 	public static String[] messages;
 
@@ -82,36 +59,7 @@ public class TelecomClient {
 		byte[] msg = createMessage(msgType, subMsgType, size, msgData);
 
 		out.write(msg);
-<<<<<<< HEAD
-		
-		byte[] response = new byte[12];
-		byte[] responseMsgType = new byte[4];
-		byte[] responseMsgSubType = new byte[4];
-		byte[] responseSize = new byte[4];
-		byte[] responseMsgData = new byte[256000];
-		
-		in.read(response, 0, 12); 
-		System.arraycopy(response, 0, responseMsgType, 0, 4);
-		System.arraycopy(response, 4, responseMsgSubType, 0, 4);
-		System.arraycopy(response, 4, responseSize, 0, 4);
-		
-		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
-		respMsgSubType = ByteBuffer.wrap(responseMsgSubType).getInt();
-		respSize = ByteBuffer.wrap(responseSize).getInt();
-		
-		System.out.print("type: " + respMsgType + "; subtype: " + respMsgSubType + "; size: " + respSize);
-=======
 
-<<<<<<< HEAD
-		// TO DO: read from server
-		while (in.read() == 0) {
-			// get byte[] response
-		}
->>>>>>> c2cd04fcf82e948ea785f3516a0f5624a1ae9dd7
-
-		int result = ByteBuffer.wrap(subMsgType).getInt();
-		return result;
-=======
 		byte[] response = new byte[12];
 		byte[] responseMsgType = new byte[4];
 		byte[] responseSubMsgType = new byte[4];
@@ -127,7 +75,6 @@ public class TelecomClient {
 		respSize = ByteBuffer.wrap(responseSize).getInt();
 		
 		return respSubMsgType;
->>>>>>> 765ca2b9d706407d5fd49109371803192d8d7b1e
 	}
 
 	public static int createUser(String username, String password) throws IOException {
@@ -155,25 +102,6 @@ public class TelecomClient {
 		return readWriteSocket(6, 0, 0, "");
 	}
 
-<<<<<<< HEAD
-	public static void connectToServer() throws IOException {
-
-		try {
-			InetAddress address = InetAddress.getByName(host);
-			clientConnection = new Socket (address, port);
-			
-			in = new DataInputStream(clientConnection.getInputStream());
-			
-		
-//			String line = br.readLine();
-			
-			//outStream = clientConnection.getOutputStream();
-		//	ps = new PrintStream(outStream, true); // Second param: auto-flush on write = true
-//			ps.println("Hello, Other side of the connection!");
-			
-			
-			out = new DataOutputStream(clientConnection.getOutputStream());
-=======
 	public static int queryMessages() throws IOException {
 
 		byte[] msgTypeB = ByteBuffer.allocate(4).putInt(9).array();
@@ -193,7 +121,6 @@ public class TelecomClient {
 		ArrayList<byte[]> messagesList = new ArrayList<byte[]>();
 
 		while (msgTypeB != null) {
->>>>>>> c2cd04fcf82e948ea785f3516a0f5624a1ae9dd7
 			
 			System.arraycopy(response, 4, subMsgTypeB, 0, 4);
 			if (ByteBuffer.wrap(subMsgTypeB).getInt() == 0) {
@@ -227,11 +154,7 @@ public class TelecomClient {
 
 		System.out.println("echo fct");
 		System.out.println("sent msg: " + payload);
-<<<<<<< HEAD
-//		System.out.println("msg echoed: " + respMsgData);
-=======
 //		System.out.println("msg echoed: " + responseMsgData);
->>>>>>> 765ca2b9d706407d5fd49109371803192d8d7b1e
 	}
 
 	public static void exit() throws Exception {
