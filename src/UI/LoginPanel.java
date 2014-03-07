@@ -54,8 +54,8 @@ public class LoginPanel extends JPanel {
 
 		JPanel panel = new JPanel();
 		setLayout(null);
-		setPreferredSize(new Dimension(444, 288));
-		panel.setBounds(0, 6, 444, 288);
+		setPreferredSize(new Dimension(600, 400));
+		panel.setBounds(0, 6, 600, 400);
 		add(panel);
 
 		btnLogin = new JButton("Login");
@@ -64,7 +64,7 @@ public class LoginPanel extends JPanel {
 			public void mouseClicked(MouseEvent arg0) {
 
 				try {
-					loginResult = TelecomClient.createUser(username.getText(), (password.getText()));
+					loginResult = TelecomClient.loginUser(username.getText(), (password.getText()));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}

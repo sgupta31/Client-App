@@ -38,6 +38,9 @@ import javax.swing.ScrollPaneConstants;
 public class ChatPanel extends JPanel {
 
 	public static JButton btnLogin;
+	private JTextField textField;
+	private static JTextArea message;
+	private static String text;
 
 	/**
 	 * Create the application.
@@ -53,19 +56,19 @@ public class ChatPanel extends JPanel {
 
 		JPanel panel = new JPanel();
 		setLayout(null);
-		setPreferredSize(new Dimension(444, 288));
-		panel.setBounds(0, 0, 444, 288);
+		setPreferredSize(new Dimension(600, 400));
+		panel.setBounds(0, 0, 600, 400);
 		add(panel);
 		panel.setLayout(null);
 		
 		JLabel lblChat = new JLabel("Chat");
 		lblChat.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
-		lblChat.setBounds(188, 44, 55, 29);
+		lblChat.setBounds(265, 28, 55, 29);
 		panel.add(lblChat);
 		
 		JLabel lblNewLabel = new JLabel("Logged in user: " + loggedInUser);
 		lblNewLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
-		lblNewLabel.setBounds(24, 102, 219, 29);
+		lblNewLabel.setBounds(72, 69, 219, 29);
 		panel.add(lblNewLabel);
 		
 		JButton btnLogout = new JButton("Logout");
@@ -93,13 +96,39 @@ public class ChatPanel extends JPanel {
 				}
 			}
 		});
-		btnLogout.setBounds(265, 104, 117, 29);
+		btnLogout.setBounds(329, 71, 117, 29);
 		panel.add(btnLogout);
 		
-	    JTextArea message = new JTextArea(16, 58);
+	    message = new JTextArea(16, 58);
 	    message.setText("");
-	    message.setBounds(83, 168, 278, 69);
+	    message.setBounds(212, 123, 249, 69);
 	    panel.add(message);
+	    
+	    JLabel lblMessageToSend = new JLabel("Message to send:");
+	    lblMessageToSend.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
+	    lblMessageToSend.setBounds(48, 138, 142, 29);
+	    panel.add(lblMessageToSend);
+	    
+	    JButton btnSend = new JButton("Send");
+	    btnSend.addMouseListener(new MouseAdapter() {
+	    	@Override
+	    	public void mouseClicked(MouseEvent arg0) {
+	    		text = message.getText();
+	    	}
+	    });
+	    btnSend.setBounds(473, 140, 117, 29);
+	    panel.add(btnSend);
+	    
+	    JLabel lblInbox = new JLabel("Inbox");
+	    lblInbox.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
+	    lblInbox.setBounds(48, 216, 76, 19);
+	    panel.add(lblInbox);
+	    
+	    textField = new JTextField();
+	    textField.setBounds(48, 251, 413, 84);
+	    panel.add(textField);
+	    textField.setColumns(10);
+	    textField.setText("bla");
 //		
 //	    JScrollPane scroll = new JScrollPane(message);
 //	    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
