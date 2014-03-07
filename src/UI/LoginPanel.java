@@ -64,7 +64,7 @@ public class LoginPanel extends JPanel {
 			public void mouseClicked(MouseEvent arg0) {
 
 				try {
-					loginResult = TelecomClient.createUser(username.getText(), (password.getText()));
+					loginResult = TelecomClient.loginUser(username.getText(), (password.getText()));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
