@@ -17,8 +17,8 @@ public class TelecomClient {
 	static DataOutputStream out;
 
 	static byte[] response;
-	private static int responseMsgType = 5000, responseSubMsgType = 5000, responseSize = 0;
-	private static String responseMsgData = ""; 
+	private static int respMsgType, respSubMsgType, respSize;
+	private static String respMsgData = ""; 
 	
 	public static String[] messages;
 
@@ -27,16 +27,7 @@ public class TelecomClient {
 		try {
 			InetAddress address = InetAddress.getByName(host);
 			clientConnection = new Socket (address, port);
-
 			in = new DataInputStream(clientConnection.getInputStream());
-
-			//			String line = br.readLine();
-
-			//outStream = clientConnection.getOutputStream();
-			//	ps = new PrintStream(outStream, true); // Second param: auto-flush on write = true
-			//			ps.println("Hello, Other side of the connection!");
-
-
 			out = new DataOutputStream(clientConnection.getOutputStream());
 
 		} catch (IOException e) {
@@ -69,13 +60,21 @@ public class TelecomClient {
 
 		out.write(msg);
 
-		// TO DO: read from server
-		while (in.read() == 0) {
-			// get byte[] response
-		}
-
-		int result = ByteBuffer.wrap(subMsgType).getInt();
-		return result;
+		byte[] response = new byte[12];
+		byte[] responseMsgType = new byte[4];
+		byte[] responseSubMsgType = new byte[4];
+		byte[] responseSize = new byte[4];
+		
+		in.read(response, 0, 12);
+		System.arraycopy(response, 0, responseMsgType, 0, 4);
+		System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+		System.arraycopy(response, 8, responseSize, 0, 4);
+		
+		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+		respSize = ByteBuffer.wrap(responseSize).getInt();
+		
+		return respSubMsgType;
 	}
 
 	public static int createUser(String username, String password) throws IOException {
@@ -155,7 +154,7 @@ public class TelecomClient {
 
 		System.out.println("echo fct");
 		System.out.println("sent msg: " + payload);
-		System.out.println("msg echoed: " + responseMsgData);
+//		System.out.println("msg echoed: " + responseMsgData);
 	}
 
 	public static void exit() throws Exception {
