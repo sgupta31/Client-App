@@ -54,8 +54,8 @@ public class LoginPanel extends JPanel {
 
 		JPanel panel = new JPanel();
 		setLayout(null);
-		setPreferredSize(new Dimension(444, 288));
-		panel.setBounds(0, 6, 444, 288);
+		setPreferredSize(new Dimension(600, 400));
+		panel.setBounds(0, 6, 600, 400);
 		add(panel);
 
 		btnLogin = new JButton("Login");
