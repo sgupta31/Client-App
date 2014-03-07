@@ -34,9 +34,14 @@ public class TelecomClient {
 =======
 
 	static byte[] response;
+<<<<<<< HEAD
 	private static int responseMsgType = 5000, responseSubMsgType = 5000, responseSize = 0;
 	private static String responseMsgData = ""; 
 >>>>>>> c2cd04fcf82e948ea785f3516a0f5624a1ae9dd7
+=======
+	private static int respMsgType, respSubMsgType, respSize;
+	private static String respMsgData = ""; 
+>>>>>>> 765ca2b9d706407d5fd49109371803192d8d7b1e
 	
 	public static String[] messages;
 
@@ -45,16 +50,7 @@ public class TelecomClient {
 		try {
 			InetAddress address = InetAddress.getByName(host);
 			clientConnection = new Socket (address, port);
-
 			in = new DataInputStream(clientConnection.getInputStream());
-
-			//			String line = br.readLine();
-
-			//outStream = clientConnection.getOutputStream();
-			//	ps = new PrintStream(outStream, true); // Second param: auto-flush on write = true
-			//			ps.println("Hello, Other side of the connection!");
-
-
 			out = new DataOutputStream(clientConnection.getOutputStream());
 
 		} catch (IOException e) {
@@ -106,6 +102,7 @@ public class TelecomClient {
 		System.out.print("type: " + respMsgType + "; subtype: " + respMsgSubType + "; size: " + respSize);
 =======
 
+<<<<<<< HEAD
 		// TO DO: read from server
 		while (in.read() == 0) {
 			// get byte[] response
@@ -114,6 +111,23 @@ public class TelecomClient {
 
 		int result = ByteBuffer.wrap(subMsgType).getInt();
 		return result;
+=======
+		byte[] response = new byte[12];
+		byte[] responseMsgType = new byte[4];
+		byte[] responseSubMsgType = new byte[4];
+		byte[] responseSize = new byte[4];
+		
+		in.read(response, 0, 12);
+		System.arraycopy(response, 0, responseMsgType, 0, 4);
+		System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+		System.arraycopy(response, 8, responseSize, 0, 4);
+		
+		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+		respSize = ByteBuffer.wrap(responseSize).getInt();
+		
+		return respSubMsgType;
+>>>>>>> 765ca2b9d706407d5fd49109371803192d8d7b1e
 	}
 
 	public static int createUser(String username, String password) throws IOException {
@@ -213,7 +227,11 @@ public class TelecomClient {
 
 		System.out.println("echo fct");
 		System.out.println("sent msg: " + payload);
+<<<<<<< HEAD
 //		System.out.println("msg echoed: " + respMsgData);
+=======
+//		System.out.println("msg echoed: " + responseMsgData);
+>>>>>>> 765ca2b9d706407d5fd49109371803192d8d7b1e
 	}
 
 	public static void exit() throws Exception {
