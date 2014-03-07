@@ -39,6 +39,8 @@ public class LoginPanel extends JPanel {
 	private JLabel lblPassword;
 	private int loginResult;
 	private JPasswordField password;
+	private JButton btnExit;
+	private JPanel panel;
 
 	/**
 	 * Create the application.
@@ -52,7 +54,7 @@ public class LoginPanel extends JPanel {
 	 */
 	private void initialize() {
 
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		setLayout(null);
 		setPreferredSize(new Dimension(600, 400));
 		panel.setBounds(0, 6, 600, 400);
@@ -79,7 +81,7 @@ public class LoginPanel extends JPanel {
 					JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);
 					break;
 				case 2:
-					JOptionPane.showMessageDialog(null, "Please fill in the username and password fields", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Bad credentials", "Error", JOptionPane.ERROR_MESSAGE);
 					break;
 				case 3:
 					JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -129,5 +131,20 @@ public class LoginPanel extends JPanel {
 		password = new JPasswordField();
 		password.setBounds(233, 129, 154, 31);
 		panel.add(password);
+		
+		btnExit = new JButton("Exit");
+		btnExit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					TelecomClient.exit();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnExit.setBounds(158, 279, 117, 29);
+		panel.add(btnExit);
 	}
 }

@@ -7,11 +7,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TelecomClient {
 
 	static String host = "dsp2014.ece.mcgill.ca";
-	static int port = 5000;
+	static int port = 5001;
 	static Socket clientConnection;
 	static DataInputStream in;
 	static DataOutputStream out;
@@ -45,7 +46,8 @@ public class TelecomClient {
 		System.arraycopy(subMsgType, 0, msg, 4, 4);
 		System.arraycopy(size, 0, msg, 8, 4);
 		System.arraycopy(msgData, 0, msg, 12, msgData.length);
-
+		
+		System.out.println("Created message: " + Arrays.toString(msg));
 		return msg;
 	}
 
@@ -57,7 +59,7 @@ public class TelecomClient {
 		byte[] msgData = payload.getBytes();
 
 		byte[] msg = createMessage(msgType, subMsgType, size, msgData);
-
+		
 		out.write(msg);
 
 		byte[] response = new byte[12];
@@ -74,6 +76,10 @@ public class TelecomClient {
 		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
 		respSize = ByteBuffer.wrap(responseSize).getInt();
 		
+		System.out.println("First 12 bytes of response: " + Arrays.toString(response));
+		byte[] responseMsg = new byte[respSize];
+		in.read(responseMsg, 0, respSize);
+		System.out.println("Response text: " + new String(responseMsg));
 		return respSubMsgType;
 	}
 
@@ -93,13 +99,13 @@ public class TelecomClient {
 
 	public static int logoutUser() throws IOException {
 
-		return readWriteSocket(4, 0, 0, "");
+		return readWriteSocket(4, 0, 1, " ");
 	}
 
-	public static int deleteUser (String username) throws IOException {
+	public static int deleteUser () throws IOException {
 
 		logoutUser();
-		return readWriteSocket(6, 0, 0, "");
+		return readWriteSocket(6, 0, 1, " ");
 	}
 
 	public static int queryMessages() throws IOException {

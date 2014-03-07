@@ -92,6 +92,8 @@ public class ChatPanel extends JPanel {
 					break;
 				case 2:
 					JOptionPane.showMessageDialog(null, "Session expired!", "Warning", JOptionPane.WARNING_MESSAGE);
+					((ClientApp) getTopLevelAncestor()).swapView("loginPanel");
+					ClientApp.loggedInUser = "";
 					break;
 				}
 			}
@@ -129,6 +131,21 @@ public class ChatPanel extends JPanel {
 	    panel.add(textField);
 	    textField.setColumns(10);
 	    textField.setText("bla");
+	    
+	    JButton btnExit = new JButton("Exit");
+	    btnExit.addMouseListener(new MouseAdapter() {
+	    	@Override
+	    	public void mouseClicked(MouseEvent arg0) {
+	    		try {
+					TelecomClient.exit();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    	}
+	    });
+	    btnExit.setBounds(473, 213, 117, 29);
+	    panel.add(btnExit);
 //		
 //	    JScrollPane scroll = new JScrollPane(message);
 //	    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
