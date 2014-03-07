@@ -41,6 +41,7 @@ public class ChatPanel extends JPanel {
 	private JTextField textField;
 	private static JTextArea message;
 	private static String text;
+	private static int deleteResult;
 
 	/**
 	 * Create the application.
@@ -89,6 +90,8 @@ public class ChatPanel extends JPanel {
 					break;
 				case 1:
 					JOptionPane.showMessageDialog(null, "Not logged in!", "Error", JOptionPane.ERROR_MESSAGE);
+					((ClientApp) getTopLevelAncestor()).swapView("loginPanel");
+					ClientApp.loggedInUser = "";
 					break;
 				case 2:
 					JOptionPane.showMessageDialog(null, "Session expired!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -132,6 +135,7 @@ public class ChatPanel extends JPanel {
 	    textField.setColumns(10);
 	    textField.setText("bla");
 	    
+<<<<<<< HEAD
 	    JButton btnExit = new JButton("Exit");
 	    btnExit.addMouseListener(new MouseAdapter() {
 	    	@Override
@@ -146,6 +150,35 @@ public class ChatPanel extends JPanel {
 	    });
 	    btnExit.setBounds(473, 213, 117, 29);
 	    panel.add(btnExit);
+=======
+	    JButton btnDeleteAccount = new JButton("Delete Account\n");
+	    btnDeleteAccount.addMouseListener(new MouseAdapter() {
+	    	@Override
+	    	public void mouseClicked(MouseEvent arg0) {
+	    		try {
+						deleteResult = TelecomClient.deleteUser();
+					}
+					catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					switch (deleteResult) {
+					case 0:
+						JOptionPane.showMessageDialog(null, "User deletion success");
+						((ClientApp) getTopLevelAncestor()).swapView("loginPanel");
+						break;
+					case 1:
+						JOptionPane.showMessageDialog(null, "Not logged in", "Error", JOptionPane.ERROR_MESSAGE);
+						break;
+					case 2:
+						JOptionPane.showMessageDialog(null, "General error", "Error", JOptionPane.ERROR_MESSAGE);
+						break;
+					}
+	    	}
+	    });
+	    btnDeleteAccount.setBounds(477, 213, 117, 29);
+	    panel.add(btnDeleteAccount);
+>>>>>>> f17b5c45756c41804e5018937dec23a348903995
 //		
 //	    JScrollPane scroll = new JScrollPane(message);
 //	    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
