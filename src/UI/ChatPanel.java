@@ -1,6 +1,7 @@
 package UI;
 
 import java.awt.Dimension;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
@@ -22,7 +23,7 @@ import javax.swing.JTextArea;
 public class ChatPanel extends JPanel {
 
 	public static JButton btnLogin;
-	private JTextField textField;
+	private JTextField txtInbox;
 	private static JTextArea message;
 	private static String text;
 	private static int deleteResult;
@@ -138,11 +139,14 @@ public class ChatPanel extends JPanel {
 		lblInbox.setBounds(49, 266, 76, 19);
 		panel.add(lblInbox);
 
-		textField = new JTextField();
-		textField.setBounds(48, 297, 413, 84);
-		panel.add(textField);
-		textField.setColumns(10);
-		textField.setText("bla");
+		txtInbox = new JTextField();
+		txtInbox.setBounds(48, 297, 413, 84);
+		panel.add(txtInbox);
+		txtInbox.setColumns(10);
+		
+//		panel.revalidate();
+//		panel.repaint();
+		
 		JButton btnExit = new JButton("Exit");
 		btnExit.addMouseListener(new MouseAdapter() {
 			@Override
