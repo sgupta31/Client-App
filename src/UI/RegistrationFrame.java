@@ -1,6 +1,5 @@
 package UI;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -30,6 +29,8 @@ public class RegistrationFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextField username;
 	private JPasswordField password;
+	private JButton btnRegister;
+	private JButton btnExit;
 
 	/**
 	 * Launch the application.
@@ -73,7 +74,7 @@ public class RegistrationFrame extends JFrame {
 		lblPassword.setBounds(76, 124, 120, 28);
 		contentPane.add(lblPassword);
 
-		JButton btnRegister = new JButton("Register");
+		btnRegister = new JButton("Register");
 		btnRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -109,14 +110,26 @@ public class RegistrationFrame extends JFrame {
 						}
 					}
 				}
+
 			}
 		});
 		btnRegister.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
-		btnRegister.setBounds(154, 210, 125, 35);
+		btnRegister.setBounds(156, 164, 125, 35);
 		contentPane.add(btnRegister);
 
 		password = new JPasswordField();
 		password.setBounds(229, 126, 134, 28);
 		contentPane.add(password);
+
+		btnExit = new JButton("Exit");
+		btnExit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				dispose();
+			}
+		});
+		btnExit.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
+		btnExit.setBounds(156, 222, 125, 35);
+		contentPane.add(btnExit);
 	}
 }

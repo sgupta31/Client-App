@@ -27,6 +27,7 @@ public class ClientApp extends JFrame {
 	public static int y;
 	public static String loggedInUser = "";
 	public static byte[] queryMsg;
+	public static boolean inChatPanel = false;
 
 	public static void main(String[] args) {
 		
@@ -67,9 +68,6 @@ public class ClientApp extends JFrame {
 		LoginPanel loginPanel = new LoginPanel();
 		deck.add("loginPanel", loginPanel);
 		loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.X_AXIS));
-		
-//		chatPanel = new ChatPanel();
-//		deck.add("topTenPanel", chatPanel);
 
 		// Default card
 		cardLayout.show(deck, "loginPanel");

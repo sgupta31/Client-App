@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TelecomClient {
@@ -16,11 +15,13 @@ public class TelecomClient {
 	static Socket clientConnection;
 	public static DataInputStream in;
 	public static DataOutputStream out;
-	
+
 	private static int respMsgType, respSubMsgType, respSize;
-	private static String respMsgData = ""; 
-	
+	private static String echoResp = ""; 
+	public static boolean userIsLoggedIn = false;
+
 	public static String[] messages;
+	public static String message;
 
 	public static void connectToServer() throws IOException {
 
@@ -39,13 +40,14 @@ public class TelecomClient {
 
 	public static byte[] createMessage(byte[] msgType, byte[] subMsgType, byte[] size, byte[] msgData) {
 
-		byte[] msg = new byte[4*3 + msgData.length];
+		byte[] msg = new byte[12 + msgData.length];
 
 		System.arraycopy(msgType, 0, msg, 0, 4);
 		System.arraycopy(subMsgType, 0, msg, 4, 4);
 		System.arraycopy(size, 0, msg, 8, 4);
 		System.arraycopy(msgData, 0, msg, 12, msgData.length);
-		System.out.println("Created message: " + Arrays.toString(msg));
+		if (ByteBuffer.wrap(msgType).getInt() != 9) 
+			System.out.println("Created message: " + Arrays.toString(msg));
 		return msg;
 	}
 
@@ -57,29 +59,47 @@ public class TelecomClient {
 		byte[] msgData = payload.getBytes();
 
 		byte[] msg = createMessage(msgType, subMsgType, size, msgData);
-		
+
 		out.write(msg);
 
 		byte[] response = new byte[12];
 		byte[] responseMsgType = new byte[4];
 		byte[] responseSubMsgType = new byte[4];
 		byte[] responseSize = new byte[4];
-		
+
 		in.read(response, 0, 12);
 		System.arraycopy(response, 0, responseMsgType, 0, 4);
 		System.arraycopy(response, 4, responseSubMsgType, 0, 4);
 		System.arraycopy(response, 8, responseSize, 0, 4);
-		
+
 		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
 		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
 		respSize = ByteBuffer.wrap(responseSize).getInt();
 		
-		System.out.println("First 12 bytes of response: " + Arrays.toString(response));
 		byte[] responseMsg = new byte[respSize];
 		in.read(responseMsg, 0, respSize);
-		System.out.println("Response Text: " + new String(responseMsg));
+
+		// Check if it's a query messages request
+		if (respMsgType == 9) {
+			if (respSubMsgType == 1) {
+				message = new String (responseMsg);
+				System.out.println(message);
+			}
+		} else {
+			if (respMsgType == 1) {
+				echoResp = new String(responseMsg);
+			}
+			System.out.println("First 12 bytes of response: " + Arrays.toString(response));
+			System.out.println("Response Text: " + new String(responseMsg));
+		}
 		return respSubMsgType;
 	}
+
+//	public static void retrieveMessages() throws IOException {
+//		byte[] responseMsg = new byte[respSize];
+//		in.read(responseMsg, 0, respSize);
+//		System.out.println(new String(responseMsg));
+//	}
 
 	public static int createUser(String username, String password) throws IOException {
 
@@ -95,92 +115,45 @@ public class TelecomClient {
 		int login = readWriteSocket(3, 0, payload.getBytes().length, payload);
 		int createStore = readWriteSocket(7, 0 , 1, " ");
 		switch (createStore) {
-			case 0:
-				System.out.println("Store created successfully.");
-				break;
-			case 1:
-				System.out.println("Store already exists.");
-				break;
-			case 2:
-				System.out.println("Not logged in.");
-				break;
+		case 0:
+			System.out.println("Store created successfully.");
+			break;
+		case 1:
+			System.out.println("Store already exists.");
+			break;
+		case 2:
+			System.out.println("Not logged in.");
+			break;
 		}
-		
+		echo("echoooooo");
 		return login;
 	}
 
 	public static int logoutUser() throws IOException {
 
+		userIsLoggedIn = false;
 		return readWriteSocket(4, 0, 1, " ");
 	}
 
 	public static int deleteUser () throws IOException {
 
-		//logoutUser();
 		return readWriteSocket(6, 0, 1, " ");
 	}
-	
+
 	public static int sendMessage(String toUser, String message) throws IOException {
-		
+
 		String payload = toUser + "," + message;
 		return readWriteSocket(8, 0, payload.getBytes().length, payload);
-	}
-
-	public static int queryMessages() throws IOException {
-
-		byte[] msgTypeB = ByteBuffer.allocate(4).putInt(9).array();
-		byte[] subMsgTypeB = ByteBuffer.allocate(4).putInt(0).array();
-		byte[] sizeB = ByteBuffer.allocate(4).putInt(1).array();
-		byte[] msgDataB = " ".getBytes();
-
-		int size;
-
-		byte[] msg = createMessage(msgTypeB, subMsgTypeB, sizeB, msgDataB);
-
-		out.write(msg);
-		
-		byte[] response = new byte[12];
-		in.read(response, 0, 12);
-		System.arraycopy(response, 0, msgTypeB, 0, 4);
-		ArrayList<byte[]> messagesList = new ArrayList<byte[]>();
-
-		while (msgTypeB != null) {
-			
-			System.arraycopy(response, 4, subMsgTypeB, 0, 4);
-			
-			if (ByteBuffer.wrap(subMsgTypeB).getInt() == 0) {
-				return 0;
-
-			} else {
-				
-				System.arraycopy(response, 8, sizeB, 0, 4);
-				size = ByteBuffer.wrap(sizeB).getInt();
-				byte[] messagesB = new byte[size];
-				in.read(messagesB, 0, size);
-				messagesList.add(messagesB);
-
-				// Set up variables for the next message
-				in.read(response, 0, 12);
-				System.arraycopy(response, 0, msgTypeB, 0, 4);
-			}
-		}
-		messages = new String[messagesList.size()];
-		messagesList.toArray(messages);
-		return 1;
 	}
 
 	public static void echo(String payload) throws IOException {
 
 		readWriteSocket(2, 0, payload.getBytes().length, payload);
-
-		System.out.println("echo fct");
-		System.out.println("sent msg: " + payload);
-//		System.out.println("msg echoed: " + responseMsgData);
 	}
 
 	public static void exit() throws Exception {
-
-		logoutUser();
+		
+		readWriteSocket(1, 0, 1, " ");
 		in.close();
 		out.close();
 		clientConnection.close();
