@@ -4,6 +4,10 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,8 +26,18 @@ public class ClientApp extends JFrame {
 	public static int x;
 	public static int y;
 	public static String loggedInUser = "";
+	public static byte[] queryMsg;
 
 	public static void main(String[] args) {
+		
+		
+		byte[] msgType = ByteBuffer.allocate(4).putInt(9).array();
+		byte[] subMsgType = ByteBuffer.allocate(4).putInt(0).array();
+		byte[] size = ByteBuffer.allocate(4).putInt(1).array();
+		byte[] msgData = " ".getBytes();
+
+		queryMsg = TelecomClient.createMessage(msgType, subMsgType, size, msgData);
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
