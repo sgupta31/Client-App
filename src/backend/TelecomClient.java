@@ -81,33 +81,34 @@ public class TelecomClient {
 		respSize = ByteBuffer.wrap(responseSize).getInt();
 
 		byte[] responseMsg = new byte[respSize];
-		in.read(responseMsg, 0, respSize);
+		while (in.read(responseMsg, 0, respSize) != 0) { 
 
-		// Check if it's a query messages request
-		if (respMsgType == 9) {
-			if (respSubMsgType == 1) {
-				writeMsgInTable(responseMsg);
-				messageCount++;
+			// Check if it's a query messages request
+			if (respMsgType == 9) {
+				if (respSubMsgType == 1) {
+					writeMsgInTable(responseMsg);
+					messageCount++;
 
-				if (messageCount == 10) {
-					clearMsgTable();
-					messageCount = 0;
+					if (messageCount == 10) {
+						clearMsgTable();
+						messageCount = 0;
+					}
 				}
-			}
-		} else {
-			if (respMsgType == 1) {
-				echoResp = new String(responseMsg);
-			}
-			
-			if ((respMsgType == 4) && (field1 != 4))
-				if (respSubMsgType == 2) {
-					ClientApp.loggedInUser = "";
-					LoginPanel.username.setText("");
-					LoginPanel.password.setText("");
-					((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+			} else {
+				if (respMsgType == 1) {
+					echoResp = new String(responseMsg);
 				}
-			System.out.println("First 12 bytes of response: " + Arrays.toString(response));
-			System.out.println("Response Text: " + new String(responseMsg));
+
+				if ((respMsgType == 4) && (field1 != 4))
+					if (respSubMsgType == 2) {
+						ClientApp.loggedInUser = "";
+						LoginPanel.username.setText("");
+						LoginPanel.password.setText("");
+						((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+					}
+				System.out.println("First 12 bytes of response: " + Arrays.toString(response));
+				System.out.println("Response Text: " + new String(responseMsg));
+			}
 		}
 		return respSubMsgType;
 	}
@@ -124,9 +125,9 @@ public class TelecomClient {
 		comma = msgAsString.indexOf(",");
 		parsedMsg[1] = msgAsString.substring(0, comma);
 		parsedMsg[2] = msgAsString.substring(comma + 1);
-		
+
 		String inbox = checkMsg(parsedMsg[2]);
-		
+
 		ChatPanel.table.setValueAt(parsedMsg[0], messageCount, 0);
 		ChatPanel.table.setValueAt(parsedMsg[1], messageCount, 1);
 		ChatPanel.table.setValueAt(inbox, messageCount, 2);
@@ -188,7 +189,7 @@ public class TelecomClient {
 
 		readWriteSocket(2, 0, payload.getBytes().length, payload);
 	}
-	
+
 	public static String checkMsg(String text) {
 		return text.replace("'", "\\'");
 	}
