@@ -115,7 +115,8 @@ public class ChatPanel extends JPanel {
 					sendResult = 6;
 				} else {
 					try {
-						sendResult = TelecomClient.sendMessage(txtReceiver.getText(), message.getText());
+						String newText = TelecomClient.checkMsg(message.getText());
+						sendResult = TelecomClient.sendMessage(txtReceiver.getText(), newText);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -216,11 +217,13 @@ public class ChatPanel extends JPanel {
 		DefaultTableModel dm = new DefaultTableModel(columns, 10);
   
 		table = new JTable(dm);
-//		ChatPanel.table.getColumnModel().getColumn(1).setMaxWidth(140);
-//		ChatPanel.table.getColumnModel().getColumn(0).setMaxWidth(70);
+		ChatPanel.table.getColumnModel().getColumn(2).setPreferredWidth(100);
+		ChatPanel.table.getColumnModel().getColumn(1).setPreferredWidth(50);
+		ChatPanel.table.getColumnModel().getColumn(0).setMaxWidth(70);
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
 
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBounds(28, 153, 640, 120);
         panel.add( scrollPane );
         

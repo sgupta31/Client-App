@@ -113,21 +113,13 @@ public class TelecomClient {
 
 		comma = msgAsString.indexOf(",");
 		parsedMsg[1] = msgAsString.substring(0, comma);
-
 		parsedMsg[2] = msgAsString.substring(comma + 1);
-
-		int colWidth = ChatPanel.table.getColumnModel().getColumn(2).getWidth();
-		System.out.println(colWidth + " " + parsedMsg[2].length());
-		System.out.println(ChatPanel.table.getRowHeight());
-		if (parsedMsg[2].length() > colWidth) {
-			int rowLength = (parsedMsg[2].length()/colWidth) * ChatPanel.table.getRowHeight();
-			System.out.println(rowLength);
-			ChatPanel.table.setRowHeight(messageCount, rowLength);
-		}
+		
+		String inbox = checkMsg(parsedMsg[2]);
 		
 		ChatPanel.table.setValueAt(parsedMsg[0], messageCount, 0);
 		ChatPanel.table.setValueAt(parsedMsg[1], messageCount, 1);
-		ChatPanel.table.setValueAt(parsedMsg[2], messageCount, 2);
+		ChatPanel.table.setValueAt(inbox, messageCount, 2);
 	}
 
 	public static void clearMsgTable() {
@@ -185,6 +177,11 @@ public class TelecomClient {
 	public static void echo(String payload) throws IOException {
 
 		readWriteSocket(2, 0, payload.getBytes().length, payload);
+	}
+	
+	public static String checkMsg(String text) {
+		text.replace("'", "\\'");
+		return text;
 	}
 
 	public static void exit() throws Exception {
