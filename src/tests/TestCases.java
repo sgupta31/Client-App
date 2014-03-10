@@ -171,7 +171,7 @@ public class TestCases {
 				assertEquals(0, respMsgSubType);
 	 }
 	 
-	 //Echo requestpublic void 
+	 //Echo request
 	 @Test
 	 public void testEcho(){
 		try {
@@ -184,23 +184,5 @@ public class TestCases {
 		}
 		assertEquals(0, respMsgSubType);
 	 }
-	 
-	 /*Delete User: This command is the equivalent to a closing of the currently logged in user’s account on the server. This command has three possible responses signified in the Sub-Message Type field:
-		 a. User Deletion success = 0
-		 b. Not Logged In = 1
-		 c. General Error
-		 i. A General Error should never occur since a user must be logged-in in order to delete themselves. However it is here to complete the syntax of the system*/
 
-	 	@Test 
-	 	public void testDeleteUser(){
-	 		try {
-	 			TelecomClient.loginUser(username, password);
-				respMsgSubType = TelecomClient.readWriteSocket(6, 0, 1, " ");
-			}
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	 		assertEquals(0, respMsgSubType);
-	 	}
 }
