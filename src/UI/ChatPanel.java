@@ -13,21 +13,24 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.table.DefaultTableModel;
 
 public class ChatPanel extends JPanel {
 
 	public static JButton btnLogin;
-	private JTextField txtInbox;
-	private static JTextArea message;
 	private static int deleteResult;
 	private JTextField txtReceiver;
 	private static int sendResult;
 	private static String user;
-
+	public static JTable table;
+	private static JTextArea message;
+	
 	/**
 	 * Create the application.
 	 */
@@ -49,8 +52,8 @@ public class ChatPanel extends JPanel {
 		panel.setLayout(null);
 
 		JLabel lblChat = new JLabel("Chat");
-		lblChat.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
-		lblChat.setBounds(323, 23, 55, 29);
+		lblChat.setFont(new Font("Lucida Grande", Font.PLAIN, 23));
+		lblChat.setBounds(309, 28, 75, 29);
 		panel.add(lblChat);
 
 		JLabel lblNewLabel = new JLabel("Logged in user: " + loggedInUser);
@@ -96,14 +99,9 @@ public class ChatPanel extends JPanel {
 		btnLogout.setBounds(379, 71, 117, 29);
 		panel.add(btnLogout);
 
-		message = new JTextArea(16, 58);
-		message.setText("");
-		message.setBounds(265, 146, 311, 117);
-		panel.add(message);
-
 		JLabel lblMessageToSend = new JLabel("Message to send:");
 		lblMessageToSend.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
-		lblMessageToSend.setBounds(287, 105, 142, 29);
+		lblMessageToSend.setBounds(403, 333, 142, 29);
 		panel.add(lblMessageToSend);
 
 		JButton btnSend = new JButton("Send");
@@ -112,6 +110,9 @@ public class ChatPanel extends JPanel {
 			public void mouseClicked(MouseEvent arg0) {
 				if (txtReceiver.getText().equals(user)) {
 					sendResult = 5;
+				}
+				if (txtReceiver.getText().equals("")) {
+					sendResult = 6;
 				} else {
 					try {
 						sendResult = TelecomClient.sendMessage(txtReceiver.getText(), message.getText());
@@ -149,26 +150,21 @@ public class ChatPanel extends JPanel {
 					break;
 				case 5: 
 					JOptionPane.showMessageDialog(null, "Can't sent message to yourself!", "Error", JOptionPane.ERROR_MESSAGE);
-					txtReceiver.setText("");
 					message.setText("");
+					break;
+				case 6:
+					JOptionPane.showMessageDialog(null, "Please specify recepient.", "Error", JOptionPane.ERROR_MESSAGE);
 					break;
 				}
 			}
 		});
-		btnSend.setBounds(582, 158, 117, 29);
+		btnSend.setBounds(281, 446, 117, 29);
 		panel.add(btnSend);
 
 		JLabel lblInbox = new JLabel("Inbox");
 		lblInbox.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
-		lblInbox.setBounds(323, 291, 106, 29);
+		lblInbox.setBounds(323, 112, 61, 29);
 		panel.add(lblInbox);
-
-		txtInbox = new JTextField();
-		txtInbox.setBounds(66, 332, 560, 106);
-		panel.add(txtInbox);
-		txtInbox.setColumns(10);
-
-		txtInbox.setText(TelecomClient.message);
 
 		JButton btnDeleteAccount = new JButton("Delete Account");
 		btnDeleteAccount.addMouseListener(new MouseAdapter() {
@@ -208,13 +204,33 @@ public class ChatPanel extends JPanel {
 
 		JLabel lblTo = new JLabel("To:");
 		lblTo.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
-		lblTo.setBounds(44, 111, 61, 16);
+		lblTo.setBounds(101, 339, 39, 16);
 		panel.add(lblTo);
 
 		txtReceiver = new JTextField();
-		txtReceiver.setBounds(26, 146, 209, 28);
+		txtReceiver.setBounds(28, 361, 209, 28);
 		panel.add(txtReceiver);
 		txtReceiver.setColumns(10);
 
-	}
+		String[] columns = {"From", "Date and Time", "Message"};
+		DefaultTableModel dm = new DefaultTableModel(columns, 10);
+  
+		table = new JTable(dm);
+//		ChatPanel.table.getColumnModel().getColumn(1).setMaxWidth(140);
+//		ChatPanel.table.getColumnModel().getColumn(0).setMaxWidth(70);
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(28, 153, 640, 120);
+        panel.add( scrollPane );
+        
+        message = new JTextArea();
+        message.setLineWrap(true);
+        JScrollPane scrollPane_1 = new JScrollPane(message);
+        scrollPane_1.setBounds(309, 361, 369, 79);
+        scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        panel.add(scrollPane_1);
+       
+	}		
 }

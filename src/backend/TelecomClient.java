@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import UI.ChatPanel;
+
 public class TelecomClient {
 
 	static String host = "dsp2014.ece.mcgill.ca";
@@ -20,7 +22,7 @@ public class TelecomClient {
 	private static String echoResp = ""; 
 	public static boolean userIsLoggedIn = false;
 
-	public static String[] messages;
+	public static int messageCount = 0;
 	public static String message;
 
 	public static void connectToServer() throws IOException {
@@ -75,15 +77,20 @@ public class TelecomClient {
 		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
 		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
 		respSize = ByteBuffer.wrap(responseSize).getInt();
-		
+
 		byte[] responseMsg = new byte[respSize];
 		in.read(responseMsg, 0, respSize);
 
 		// Check if it's a query messages request
 		if (respMsgType == 9) {
 			if (respSubMsgType == 1) {
-				message = new String (responseMsg);
-				System.out.println(message);
+				writeMsgInTable(responseMsg);
+				messageCount++;
+
+				if (messageCount == 10) {
+					clearMsgTable();
+					messageCount = 0;
+				}
 			}
 		} else {
 			if (respMsgType == 1) {
@@ -95,11 +102,40 @@ public class TelecomClient {
 		return respSubMsgType;
 	}
 
-//	public static void retrieveMessages() throws IOException {
-//		byte[] responseMsg = new byte[respSize];
-//		in.read(responseMsg, 0, respSize);
-//		System.out.println(new String(responseMsg));
-//	}
+	public static void writeMsgInTable(byte[] message) throws IOException {
+
+		String msgAsString = new String(message);
+		String[] parsedMsg = new String[3];
+
+		int comma = msgAsString.indexOf(",");
+		parsedMsg[0] = msgAsString.substring(0, comma);
+		msgAsString = msgAsString.substring(comma + 1);
+
+		comma = msgAsString.indexOf(",");
+		parsedMsg[1] = msgAsString.substring(0, comma);
+
+		parsedMsg[2] = msgAsString.substring(comma + 1);
+
+		int colWidth = ChatPanel.table.getColumnModel().getColumn(2).getWidth();
+		System.out.println(colWidth + " " + parsedMsg[2].length());
+		System.out.println(ChatPanel.table.getRowHeight());
+		if (parsedMsg[2].length() > colWidth) {
+			int rowLength = (parsedMsg[2].length()/colWidth) * ChatPanel.table.getRowHeight();
+			System.out.println(rowLength);
+			ChatPanel.table.setRowHeight(messageCount, rowLength);
+		}
+		
+		ChatPanel.table.setValueAt(parsedMsg[0], messageCount, 0);
+		ChatPanel.table.setValueAt(parsedMsg[1], messageCount, 1);
+		ChatPanel.table.setValueAt(parsedMsg[2], messageCount, 2);
+	}
+
+	public static void clearMsgTable() {
+		for (int i = 0; i < 10; i++) 
+			for (int j = 0; j < 3; j++) {
+				ChatPanel.table.setValueAt("", i, j);
+			}
+	}
 
 	public static int createUser(String username, String password) throws IOException {
 
@@ -152,8 +188,8 @@ public class TelecomClient {
 	}
 
 	public static void exit() throws Exception {
-		
-		readWriteSocket(1, 0, 1, " ");
+
+		readWriteSocket(0, 0, 1, " ");
 		in.close();
 		out.close();
 		clientConnection.close();

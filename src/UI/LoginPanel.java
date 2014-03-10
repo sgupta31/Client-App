@@ -84,12 +84,18 @@ public class LoginPanel extends JPanel {
 							break;
 						case 1:
 							JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);
+							username.setText("");
+							password.setText("");
 							break;
 						case 2:
 							JOptionPane.showMessageDialog(null, "Bad credentials", "Error", JOptionPane.ERROR_MESSAGE);
+							username.setText("");
+							password.setText("");
 							break;
 						case 3:
 							JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);
+							username.setText("");
+							password.setText("");
 							break;
 						}
 					}
