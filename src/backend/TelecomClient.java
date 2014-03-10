@@ -153,7 +153,7 @@ public class TelecomClient {
 
 	public static void exit() throws Exception {
 		
-		readWriteSocket(1, 0, 1, " ");
+		readWriteSocket(0, 0, 1, " ");
 		in.close();
 		out.close();
 		clientConnection.close();
