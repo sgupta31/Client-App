@@ -150,6 +150,8 @@ public class LoginPanel extends JPanel {
 					username.setEnabled(false);
 					password.setEnabled(false);
 					buttonAsDisconnect = false;
+					username.setText("");
+					password.setText("");
 					btnExit.setText("Connect!");
 					try {
 						TelecomClient.exit();

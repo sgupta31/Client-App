@@ -26,6 +26,7 @@ public class ChatPanel extends JPanel {
 	private static int deleteResult;
 	private JTextField txtReceiver;
 	private static int sendResult;
+	private static String user;
 
 	/**
 	 * Create the application.
@@ -39,6 +40,7 @@ public class ChatPanel extends JPanel {
 	 */
 	private void initialize(String loggedInUser) {
 
+		user = loggedInUser;
 		JPanel panel = new JPanel();
 		setLayout(null);
 		setPreferredSize(new Dimension(700, 500));
@@ -108,11 +110,15 @@ public class ChatPanel extends JPanel {
 		btnSend.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				try {
-					sendResult = TelecomClient.sendMessage(txtReceiver.getText(), message.getText());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (txtReceiver.getText().equals(user)) {
+					sendResult = 5;
+				} else {
+					try {
+						sendResult = TelecomClient.sendMessage(txtReceiver.getText(), message.getText());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 
 				switch (sendResult) {
@@ -141,6 +147,11 @@ public class ChatPanel extends JPanel {
 					txtReceiver.setText("");
 					message.setText("");
 					break;
+				case 5: 
+					JOptionPane.showMessageDialog(null, "Can't sent message to yourself!", "Error", JOptionPane.ERROR_MESSAGE);
+					txtReceiver.setText("");
+					message.setText("");
+					break;
 				}
 			}
 		});
@@ -156,9 +167,9 @@ public class ChatPanel extends JPanel {
 		txtInbox.setBounds(66, 332, 560, 106);
 		panel.add(txtInbox);
 		txtInbox.setColumns(10);
-		
+
 		txtInbox.setText(TelecomClient.message);
-		
+
 		JButton btnDeleteAccount = new JButton("Delete Account");
 		btnDeleteAccount.addMouseListener(new MouseAdapter() {
 			@Override
