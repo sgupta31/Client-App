@@ -180,8 +180,7 @@ public class TelecomClient {
 	}
 	
 	public static String checkMsg(String text) {
-		text.replace("'", "\\'");
-		return text;
+		return text.replace("'", "\\'");
 	}
 
 	public static void exit() throws Exception {
