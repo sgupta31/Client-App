@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import UI.ChatPanel;
+import UI.ClientApp;
+import UI.LoginPanel;
 
 public class TelecomClient {
 
@@ -96,6 +98,14 @@ public class TelecomClient {
 			if (respMsgType == 1) {
 				echoResp = new String(responseMsg);
 			}
+			
+			if ((respMsgType == 4) && (field1 != 4))
+				if (respSubMsgType == 2) {
+					ClientApp.loggedInUser = "";
+					LoginPanel.username.setText("");
+					LoginPanel.password.setText("");
+					((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+				}
 			System.out.println("First 12 bytes of response: " + Arrays.toString(response));
 			System.out.println("Response Text: " + new String(responseMsg));
 		}
