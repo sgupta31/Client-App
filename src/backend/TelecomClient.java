@@ -16,7 +16,7 @@ import UI.LoginPanel;
 public class TelecomClient {
 
 	static String host = "dsp2014.ece.mcgill.ca";
-	static int port = 5001;
+	static int port = 5000;
 	static Socket clientConnection;
 	public static DataInputStream in;
 	public static DataOutputStream out;
@@ -27,7 +27,6 @@ public class TelecomClient {
 
 	public static int messageCount = 0;
 	public static String message;
-	public static ArrayList<String> messages;
 
 	public static void connectToServer() throws IOException {
 
@@ -59,6 +58,8 @@ public class TelecomClient {
 
 	public static int readWriteSocket(int field1, int field2, int field3, String payload) throws IOException {
 
+		int localRespMsgType, localRespSubMsgType, localRespSize;
+
 		byte[] msgType = ByteBuffer.allocate(4).putInt(field1).array();
 		byte[] subMsgType = ByteBuffer.allocate(4).putInt(field2).array();
 		byte[] size = ByteBuffer.allocate(4).putInt(field3).array();
@@ -72,58 +73,64 @@ public class TelecomClient {
 		byte[] responseMsgType = new byte[4];
 		byte[] responseSubMsgType = new byte[4];
 		byte[] responseSize = new byte[4];
+		
+		while (in.read(response, 0, 12) != 0) {
 
-		in.read(response, 0, 12);
-		System.arraycopy(response, 0, responseMsgType, 0, 4);
-		System.arraycopy(response, 4, responseSubMsgType, 0, 4);
-		System.arraycopy(response, 8, responseSize, 0, 4);
+			
+			System.arraycopy(response, 0, responseMsgType, 0, 4);
+			System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+			System.arraycopy(response, 8, responseSize, 0, 4);
 
-		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
-		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
-		respSize = ByteBuffer.wrap(responseSize).getInt();
+			respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+			respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+			respSize = ByteBuffer.wrap(responseSize).getInt();
 
-		byte[] responseMsg = new byte[respSize];		
-		in.read(responseMsg, 0, respSize);
+			byte[] responseMsg = new byte[respSize];		
+			in.read(responseMsg, 0, respSize);
 
-		// Check if it's a query messages request
-		if (respMsgType == 9) {
-			while (respMsgType == 9) {
-				if (respSubMsgType == 1) {
-					writeMsgInTable(responseMsg);
-					messageCount++;
+			// Check if it's a query messages request
+			if (respMsgType == 9) {
+//				while (respMsgType == 9) {
+					if (respSubMsgType == 1) {
+						
+						if (messageCount == 10) {
+							clearMsgTable();
+							messageCount = 0;
+						}
+						
+						writeMsgInTable(responseMsg);
+						messageCount++;
 
-					if (messageCount == 10) {
-						clearMsgTable();
-						messageCount = 0;
+//						in.read(response, 0, 12);
+//						System.arraycopy(response, 0, responseMsgType, 0, 4);
+//						System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+//						System.arraycopy(response, 8, responseSize, 0, 4);
+//
+//						respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+//						respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+//						respSize = ByteBuffer.wrap(responseSize).getInt();
+//						responseMsg = new byte[respSize];
+//						in.read(responseMsg, 0, respSize);
+//					}
+				}
+			} else {
+				if (respMsgType == 1) {
+					echoResp = new String(responseMsg);
+				}
+
+				if ((respMsgType == 4) && (field1 != 4))
+					if (respSubMsgType == 2) {
+						ClientApp.loggedInUser = "";
+						LoginPanel.username.setText("");
+						LoginPanel.password.setText("");
+						((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
 					}
-
-					in.read(response, 0, 12);
-					System.arraycopy(response, 0, responseMsgType, 0, 4);
-					System.arraycopy(response, 4, responseSubMsgType, 0, 4);
-					System.arraycopy(response, 8, responseSize, 0, 4);
-
-					respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
-					respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
-					respSize = ByteBuffer.wrap(responseSize).getInt();
-					responseMsg = new byte[respSize];
-					in.read(responseMsg, 0, respSize);
-				}
+				
+				System.out.println("First 12 bytes of response: " + Arrays.toString(response));
+				System.out.println("Response Text: " + new String(responseMsg));
 			}
-		} else {
-			if (respMsgType == 1) {
-				echoResp = new String(responseMsg);
-			}
-
-			if ((respMsgType == 4) && (field1 != 4))
-				if (respSubMsgType == 2) {
-					ClientApp.loggedInUser = "";
-					LoginPanel.username.setText("");
-					LoginPanel.password.setText("");
-					((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
-				}
-			System.out.println("First 12 bytes of response: " + Arrays.toString(response));
-			System.out.println("Response Text: " + new String(responseMsg));
-		}
+			
+		} 
 
 		return respSubMsgType;
 	}
