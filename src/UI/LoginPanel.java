@@ -60,6 +60,9 @@ public class LoginPanel extends JPanel {
 				if (StringUtils.isBlank(username.getText())) {
 					JOptionPane.showMessageDialog(null, "Please provide a username.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
+				} else if (username.getText().contains(",")) {
+					JOptionPane.showMessageDialog(null, "User name should not contain any commas.", "Warning",
+							JOptionPane.WARNING_MESSAGE);
 				} else {
 					if (StringUtils.isBlank(password.getText())) {
 						JOptionPane.showMessageDialog(null, "Please provide a password.", "Warning",
