@@ -108,7 +108,9 @@ public class ChatPanel extends JPanel {
 		btnSend.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if (txtReceiver.getText().equals(user)) {
+//				System.out.println("logged in user: " + ClientApp.loggedInUser);
+//				System.out.println("receiver: " + txtReceiver.getText());
+				if ((txtReceiver.getText()) == (ClientApp.loggedInUser)) {
 					sendResult = 5;
 				}
 				if (txtReceiver.getText().equals("")) {
@@ -151,7 +153,7 @@ public class ChatPanel extends JPanel {
 					break;
 				case 5: 
 					JOptionPane.showMessageDialog(null, "Can't sent message to yourself!", "Error", JOptionPane.ERROR_MESSAGE);
-					message.setText("");
+					txtReceiver.setText("");
 					break;
 				case 6:
 					JOptionPane.showMessageDialog(null, "Please specify recepient.", "Error", JOptionPane.ERROR_MESSAGE);

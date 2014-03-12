@@ -77,6 +77,7 @@ public class LoginPanel extends JPanel {
 						switch (loginResult) {
 						case 0:
 							ClientApp.chatPanel = new ChatPanel(username.getText());
+							ClientApp.loggedInUser = username.getText();
 							ClientApp.deck.add("chatPanel", ClientApp.chatPanel);
 							((ClientApp) getTopLevelAncestor()).swapView("chatPanel");
 							ClientApp.inChatPanel = true;
