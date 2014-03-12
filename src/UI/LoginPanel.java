@@ -83,7 +83,7 @@ public class LoginPanel extends JPanel {
 							TelecomClient.userIsLoggedIn = true;
 							Timer timer = new Timer();
 							MessageQuery task = new MessageQuery();
-							timer.scheduleAtFixedRate(task, 1000, 1000); 
+							timer.scheduleAtFixedRate(task, 1000, 2000); 
 							break;
 						case 1:
 							JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import UI.ChatPanel;
@@ -26,6 +27,7 @@ public class TelecomClient {
 
 	public static int messageCount = 0;
 	public static String message;
+	public static ArrayList<String> messages;
 
 	public static void connectToServer() throws IOException {
 
@@ -80,18 +82,31 @@ public class TelecomClient {
 		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
 		respSize = ByteBuffer.wrap(responseSize).getInt();
 
-		byte[] responseMsg = new byte[respSize];
-
+		byte[] responseMsg = new byte[respSize];		
+		in.read(responseMsg, 0, respSize);
 
 		// Check if it's a query messages request
 		if (respMsgType == 9) {
-			if (respSubMsgType == 1) {
-				writeMsgInTable(responseMsg);
-				messageCount++;
+			while (respMsgType == 9) {
+				if (respSubMsgType == 1) {
+					writeMsgInTable(responseMsg);
+					messageCount++;
 
-				if (messageCount == 10) {
-					clearMsgTable();
-					messageCount = 0;
+					if (messageCount == 10) {
+						clearMsgTable();
+						messageCount = 0;
+					}
+
+					in.read(response, 0, 12);
+					System.arraycopy(response, 0, responseMsgType, 0, 4);
+					System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+					System.arraycopy(response, 8, responseSize, 0, 4);
+
+					respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+					respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+					respSize = ByteBuffer.wrap(responseSize).getInt();
+					responseMsg = new byte[respSize];
+					in.read(responseMsg, 0, respSize);
 				}
 			}
 		} else {
