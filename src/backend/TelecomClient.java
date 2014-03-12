@@ -73,65 +73,70 @@ public class TelecomClient {
 		byte[] responseMsgType = new byte[4];
 		byte[] responseSubMsgType = new byte[4];
 		byte[] responseSize = new byte[4];
+		byte[] responseMsg;
+
+		int nrRead;
 		
-		while (in.read(response, 0, 12) != 0) {
+		in.read(response, 0, 12);
 
-			
-			System.arraycopy(response, 0, responseMsgType, 0, 4);
-			System.arraycopy(response, 4, responseSubMsgType, 0, 4);
-			System.arraycopy(response, 8, responseSize, 0, 4);
+		System.arraycopy(response, 0, responseMsgType, 0, 4);
+		System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+		System.arraycopy(response, 8, responseSize, 0, 4);
 
-			respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
-			respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
-			respSize = ByteBuffer.wrap(responseSize).getInt();
+		respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+		respSize = ByteBuffer.wrap(responseSize).getInt();
+		System.out.println(respSize);
+		responseMsg = new byte[respSize];		
+		in.read(responseMsg, 0, respSize);
+		System.out.println("resp: " + new String(responseMsg));
 
-			byte[] responseMsg = new byte[respSize];		
-			in.read(responseMsg, 0, respSize);
+		// Check if it's a query messages request
+		if (respMsgType == 9) {
+			while (respMsgType == 9) {
+				if (respSubMsgType == 1) {
 
-			// Check if it's a query messages request
-			if (respMsgType == 9) {
-//				while (respMsgType == 9) {
-					if (respSubMsgType == 1) {
-						
-						if (messageCount == 10) {
-							clearMsgTable();
-							messageCount = 0;
-						}
-						
-						writeMsgInTable(responseMsg);
-						messageCount++;
-
-//						in.read(response, 0, 12);
-//						System.arraycopy(response, 0, responseMsgType, 0, 4);
-//						System.arraycopy(response, 4, responseSubMsgType, 0, 4);
-//						System.arraycopy(response, 8, responseSize, 0, 4);
-//
-//						respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
-//						respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
-//						respSize = ByteBuffer.wrap(responseSize).getInt();
-//						responseMsg = new byte[respSize];
-//						in.read(responseMsg, 0, respSize);
-//					}
-				}
-			} else {
-				if (respMsgType == 1) {
-					echoResp = new String(responseMsg);
-				}
-
-				if ((respMsgType == 4) && (field1 != 4))
-					if (respSubMsgType == 2) {
-						ClientApp.loggedInUser = "";
-						LoginPanel.username.setText("");
-						LoginPanel.password.setText("");
-						((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+					if (messageCount == 10) {
+						clearMsgTable();
+						messageCount = 0;
 					}
-				
-				System.out.println("First 12 bytes of response: " + Arrays.toString(response));
-				System.out.println("Response Text: " + new String(responseMsg));
-			}
-			
-		} 
 
+					writeMsgInTable(responseMsg);
+					messageCount++;
+
+					if (in.read(response, 0, 12) != 0) {
+						System.arraycopy(response, 0, responseMsgType, 0, 4);
+						System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+						System.arraycopy(response, 8, responseSize, 0, 4);
+
+						respMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+						respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+						respSize = ByteBuffer.wrap(responseSize).getInt();
+						responseMsg = new byte[respSize];
+						in.read(responseMsg, 0, respSize);
+					} else {
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+		} else {
+			if (respMsgType == 1) {
+				echoResp = new String(responseMsg);
+			}
+
+			if ((respMsgType == 4) && (field1 != 4))
+				if (respSubMsgType == 2) {
+					ClientApp.loggedInUser = "";
+					LoginPanel.username.setText("");
+					LoginPanel.password.setText("");
+					((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+				}
+
+			System.out.println("First 12 bytes of response: " + Arrays.toString(response));
+			System.out.println("Response Text: " + new String(responseMsg));
+		} 
 		return respSubMsgType;
 	}
 
