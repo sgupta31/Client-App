@@ -94,12 +94,10 @@ public class TelecomClient {
 		if (respMsgType == 9) {
 			while (respMsgType == 9) {
 				if (respSubMsgType == 1) {
-
 					if (messageCount == 10) {
 						clearMsgTable();
 						messageCount = 0;
 					}
-
 					writeMsgInTable(responseMsg);
 					messageCount++;
 					if (in.available() >= 1) {
