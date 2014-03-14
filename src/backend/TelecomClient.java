@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import UI.ChatPanel;
@@ -15,7 +16,7 @@ import UI.LoginPanel;
 public class TelecomClient {
 
 	static String host = "dsp2014.ece.mcgill.ca";
-	static int port = 5001;
+	static int port = 5000;
 	static Socket clientConnection;
 	public static DataInputStream in;
 	public static DataOutputStream out;
@@ -50,12 +51,14 @@ public class TelecomClient {
 		System.arraycopy(subMsgType, 0, msg, 4, 4);
 		System.arraycopy(size, 0, msg, 8, 4);
 		System.arraycopy(msgData, 0, msg, 12, msgData.length);
-		if (ByteBuffer.wrap(msgType).getInt() != 9) 
+		if (ByteBuffer.wrap(msgType).getInt() != 9 && ByteBuffer.wrap(msgType).getInt() != 2) 
 			System.out.println("Created message: " + Arrays.toString(msg));
 		return msg;
 	}
 
 	public static int readWriteSocket(int field1, int field2, int field3, String payload) throws IOException {
+
+		int localRespMsgType, localRespSubMsgType, localRespSize;
 
 		byte[] msgType = ByteBuffer.allocate(4).putInt(field1).array();
 		byte[] subMsgType = ByteBuffer.allocate(4).putInt(field2).array();
@@ -70,8 +73,10 @@ public class TelecomClient {
 		byte[] responseMsgType = new byte[4];
 		byte[] responseSubMsgType = new byte[4];
 		byte[] responseSize = new byte[4];
+		byte[] responseMsg;
 
 		in.read(response, 0, 12);
+
 		System.arraycopy(response, 0, responseMsgType, 0, 4);
 		System.arraycopy(response, 4, responseSubMsgType, 0, 4);
 		System.arraycopy(response, 8, responseSize, 0, 4);
@@ -80,36 +85,52 @@ public class TelecomClient {
 		respSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
 		respSize = ByteBuffer.wrap(responseSize).getInt();
 
-		byte[] responseMsg = new byte[respSize];
-		while (in.read(responseMsg, 0, respSize) != 0) { 
+		System.out.println("resp size: " + respSize + " for " + respMsgType);
+		responseMsg = new byte[respSize];		
+		in.read(responseMsg, 0, respSize);
+		System.out.println("resp: " + new String(responseMsg));
 
-			// Check if it's a query messages request
-			if (respMsgType == 9) {
+		// Check if it's a query messages request
+		if (respMsgType == 9) {
+			while (respMsgType == 9) {
 				if (respSubMsgType == 1) {
-					writeMsgInTable(responseMsg);
-					messageCount++;
-
 					if (messageCount == 10) {
 						clearMsgTable();
 						messageCount = 0;
 					}
-				}
-			} else {
-				if (respMsgType == 1) {
-					echoResp = new String(responseMsg);
-				}
+					writeMsgInTable(responseMsg);
+					messageCount++;
+					if (in.available() >= 1) {
+						int read = in.read(response, 0, 12);
+						System.out.println("read " + read);
+						System.arraycopy(response, 0, responseMsgType, 0, 4);
+						System.arraycopy(response, 4, responseSubMsgType, 0, 4);
+						System.arraycopy(response, 8, responseSize, 0, 4);
 
-				if ((respMsgType == 4) && (field1 != 4))
-					if (respSubMsgType == 2) {
-						ClientApp.loggedInUser = "";
-						LoginPanel.username.setText("");
-						LoginPanel.password.setText("");
-						((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+						localRespMsgType = ByteBuffer.wrap(responseMsgType).getInt();
+						localRespSubMsgType = ByteBuffer.wrap(responseSubMsgType).getInt();
+						localRespSize = ByteBuffer.wrap(responseSize).getInt();
+						responseMsg = new byte[localRespSize];
+						in.read(responseMsg, 0, localRespSize);
+						System.out.println(new String(responseMsg));
+					} else {
+						break;
 					}
-				System.out.println("First 12 bytes of response: " + Arrays.toString(response));
-				System.out.println("Response Text: " + new String(responseMsg));
+				} else {
+					break;
+				}
 			}
-		}
+		} else {
+			if ((respMsgType == 4) && (field1 != 4))
+				if (respSubMsgType == 2) {
+					ClientApp.loggedInUser = "";
+					LoginPanel.username.setText("");
+					LoginPanel.password.setText("");
+					((ClientApp) ClientApp.chatPanel.getTopLevelAncestor()).swapView("loginPanel");
+				}
+			System.out.println("First 12 bytes of response: " + Arrays.toString(response));
+			System.out.println("Response Text: " + new String(responseMsg));
+		} 
 		return respSubMsgType;
 }
 
@@ -164,7 +185,7 @@ public class TelecomClient {
 			System.out.println("Not logged in.");
 			break;
 		}
-		echo("echoooooo");
+		//		echo("echoooooo");
 		return login;
 	}
 

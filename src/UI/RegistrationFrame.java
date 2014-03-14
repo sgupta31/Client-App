@@ -82,6 +82,9 @@ public class RegistrationFrame extends JFrame {
 				if (StringUtils.isBlank(username.getText())) {
 					JOptionPane.showMessageDialog(null, "Please provide a username.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
+				} else if (username.getText().contains(",")) {
+					JOptionPane.showMessageDialog(null, "Username should not contain any commas.", "Warning",
+							JOptionPane.WARNING_MESSAGE);
 				} else {
 					if (StringUtils.isBlank(password.getText())) {
 						JOptionPane.showMessageDialog(null, "Please provide a password.", "Warning",

@@ -60,6 +60,9 @@ public class LoginPanel extends JPanel {
 				if (StringUtils.isBlank(username.getText())) {
 					JOptionPane.showMessageDialog(null, "Please provide a username.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
+				} else if (username.getText().contains(",")) {
+					JOptionPane.showMessageDialog(null, "User name should not contain any commas.", "Warning",
+							JOptionPane.WARNING_MESSAGE);
 				} else {
 					if (StringUtils.isBlank(password.getText())) {
 						JOptionPane.showMessageDialog(null, "Please provide a password.", "Warning",
@@ -74,13 +77,14 @@ public class LoginPanel extends JPanel {
 						switch (loginResult) {
 						case 0:
 							ClientApp.chatPanel = new ChatPanel(username.getText());
+							ClientApp.loggedInUser = username.getText();
 							ClientApp.deck.add("chatPanel", ClientApp.chatPanel);
 							((ClientApp) getTopLevelAncestor()).swapView("chatPanel");
 							ClientApp.inChatPanel = true;
 							TelecomClient.userIsLoggedIn = true;
 							Timer timer = new Timer();
 							MessageQuery task = new MessageQuery();
-							timer.scheduleAtFixedRate(task, 1000, 1000); 
+							timer.scheduleAtFixedRate(task, 1000, 2000); 
 							break;
 						case 1:
 							JOptionPane.showMessageDialog(null, "User already logged in!", "Error", JOptionPane.ERROR_MESSAGE);
