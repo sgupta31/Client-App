@@ -111,7 +111,7 @@ public class TelecomClient {
 			}
 		}
 		return respSubMsgType;
-	}
+}
 
 	public static void writeMsgInTable(byte[] message) throws IOException {
 
