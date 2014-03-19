@@ -15,7 +15,8 @@ import UI.LoginPanel;
 
 public class TelecomClient {
 
-	static String host = "dsp2014.ece.mcgill.ca";
+	//static String host = "dsp2014.ece.mcgill.ca";
+	static String host = "192.168.0.102";
 	static int port = 5000;
 	static Socket clientConnection;
 	public static DataInputStream in;
@@ -32,7 +33,7 @@ public class TelecomClient {
 
 		try {
 			InetAddress address = InetAddress.getByName(host);
-			clientConnection = new Socket (address, port);
+			clientConnection = new Socket (host, port);
 			in = new DataInputStream(clientConnection.getInputStream());
 			out = new DataOutputStream(clientConnection.getOutputStream());
 
